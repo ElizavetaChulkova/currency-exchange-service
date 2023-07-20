@@ -1,6 +1,7 @@
 package ru.currency.exchange.chulkova.service;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.currency.exchange.chulkova.exceptions.ErrorMessage;
 import ru.currency.exchange.chulkova.exceptions.NotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
 import ru.currency.exchange.chulkova.repository.CurrencyJdbcRepository;
@@ -23,9 +24,11 @@ public class ExchangeService {
         double answer = 0.0;
         double amount = Double.parseDouble(amountString);
         log.debug("exchange from {} to {} amount {}", from, to, amount);
-        if (currencyRepo.getByCode(from).get().getId() == null || currencyRepo.getByCode(to).get().getId() == null ||
+        if (currencyRepo.getByCode(from).get().getId() == null ||
+                currencyRepo.getByCode(to).get().getId() == null ||
                 from.equals(to)) {
-            throw new NotFoundException("This exchange rate doesn't exist");
+            log.error("not found exception thrown");
+            throw new NotFoundException(ErrorMessage.PAIR_EXCHANGE_RATE_NOT_FOUND.getMessage());
         } else if (exRepo.getByCodePair(from, to).get().getId() != null) {
             log.info("straight strategy from {} to {}", from, to);
             ExchangeRate changePair = exchangeService.getByCodePair(from, to);
@@ -36,8 +39,8 @@ public class ExchangeService {
             ExchangeRate changePair = exchangeService.getByCodePair(to, from);
             double rate = 1 / changePair.getRate();
             answer = roundDoubles(amount * rate);
-        } else if ((exRepo.getByCodePair("USD", from) != null) &&
-                (exRepo.getByCodePair("USD", to) != null)) {
+        } else if ((exRepo.getByCodePair("USD", from).get().getId() != null) &&
+                (exRepo.getByCodePair("USD", to).get().getId() != null)) {
             log.info("USD cross-rate strategy USD - {}, USD - {}", from, to);
             String base = "USD";
             ExchangeRate usdFromRate = exchangeService.getByCodePair(base, from);

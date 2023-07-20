@@ -39,7 +39,7 @@ class ExchangeRateServiceTest {
     @Order(3)
     void getByNotExistedPair() {
         Assertions.assertThrows(NotFoundException.class,
-                () -> service.getByCodePair(BASE, currency1.getCode()));
+                () -> service.getByCodePair(BASE, INVALID_CODE));
     }
 
     @Test

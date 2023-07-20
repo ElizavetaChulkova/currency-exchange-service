@@ -20,7 +20,7 @@ import static ru.currency.exchange.chulkova.exceptions.ExceptionHandler.handleEx
 @Slf4j
 public class ExchangeServlet extends HttpServlet {
 
-    private ExchangeService service = new ExchangeService();
+    private final ExchangeService service = new ExchangeService();
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -47,6 +47,5 @@ public class ExchangeServlet extends HttpServlet {
             log.error(PAIR_EXCHANGE_RATE_NOT_FOUND.getMessage());
             handleException(resp, PAIR_EXCHANGE_RATE_NOT_FOUND);
         }
-
     }
 }

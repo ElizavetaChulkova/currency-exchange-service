@@ -1,6 +1,5 @@
 package ru.currency.exchange.chulkova.repository;
 
-import lombok.extern.slf4j.Slf4j;
 import ru.currency.exchange.chulkova.db.DatabaseConnection;
 import ru.currency.exchange.chulkova.model.CurrencyModel;
 
@@ -12,7 +11,6 @@ import java.util.Optional;
 import static ru.currency.exchange.chulkova.db.DatabaseConnection.DRIVER;
 import static ru.currency.exchange.chulkova.db.DatabaseConnection.URL;
 
-@Slf4j
 public class CurrencyJdbcRepository implements BaseRepository<CurrencyModel> {
 
     private static final String SELECT_ALL = "SELECT * FROM currency";

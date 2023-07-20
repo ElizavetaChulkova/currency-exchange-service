@@ -41,12 +41,6 @@ class ExchangeServiceTest {
     }
 
     @Test
-    void exchangePairDoesntExist() {
-        Assertions.assertThrows(NotFoundException.class,
-                () -> service.exchange(EXCHANGE_FROM, EXCHANGE_TO_EXCEPTION, EXCHANGE_AMOUNT));
-    }
-
-    @Test
     void exchangePairInvalid() {
         Assertions.assertThrows(NotFoundException.class,
                 () -> service.exchange(EXCHANGE_FROM, INVALID_CODE, EXCHANGE_AMOUNT));

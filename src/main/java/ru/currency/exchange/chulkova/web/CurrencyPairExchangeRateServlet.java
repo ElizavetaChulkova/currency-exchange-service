@@ -22,8 +22,7 @@ import static ru.currency.exchange.chulkova.exceptions.ExceptionHandler.handleEx
 @WebServlet("/exchangeRate/*")
 @Slf4j
 public class CurrencyPairExchangeRateServlet extends HttpServlet {
-    private ExchangeRateService service = new ExchangeRateService();
-    private CurrencyService currencyService = new CurrencyService();
+    private final ExchangeRateService service = new ExchangeRateService();
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -40,20 +39,20 @@ public class CurrencyPairExchangeRateServlet extends HttpServlet {
             return;
         }
         String base = pair.substring(0, 3);
-        String target = pair.substring(3, pair.length());
+        String target = pair.substring(3);
         try {
             ExchangeRate rate = service.getByCodePair(base, target);
             log.info("get exchange rate {} - {}", base, target);
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write(JsonUtil.writeJson(rate));
-        } catch (NullPointerException e){
+        } catch (NotFoundException e) {
             log.error(PAIR_EXCHANGE_RATE_NOT_FOUND.getMessage());
             handleException(resp, PAIR_EXCHANGE_RATE_NOT_FOUND);
         }
     }
 
     @Override
-    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json");
         String pair = InputStringUtils.parsePathInfo(req);
@@ -62,23 +61,24 @@ public class CurrencyPairExchangeRateServlet extends HttpServlet {
         if (pair.isEmpty()) {
             log.error(CODE_NOT_IN_ADDRESS.getMessage());
             handleException(resp, CODE_NOT_IN_ADDRESS);
-        } else if (!ExchangeRateUtils.isCorrectPair(pair) || rate.isEmpty()) {
+            return;
+        } else if (!ExchangeRateUtils.isCorrectPair(pair) || rate == null) {
             log.error(DATA_IS_INVALID.getMessage());
             handleException(resp, DATA_IS_INVALID);
             return;
         }
         String base = pair.substring(0, 3);
-        String target = pair.substring(3, pair.length());
-        if (!ExchangeRateUtils.isPairNotExisted(base, target)) {
-            log.error(PAIR_NOT_FOUND.getMessage());
-            handleException(resp, PAIR_NOT_FOUND);
-        } else {
+        String target = pair.substring(3);
+        try {
             ExchangeRate toUpdate = service.getByCodePair(base, target);
             toUpdate.setRate(Double.parseDouble(rate));
             service.update(toUpdate);
             log.info("updated");
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write(JsonUtil.writeJson(toUpdate));
+        } catch (NotFoundException e) {
+            log.error(PAIR_EXCHANGE_RATE_NOT_FOUND.getMessage());
+            handleException(resp, PAIR_EXCHANGE_RATE_NOT_FOUND);
         }
     }
 }

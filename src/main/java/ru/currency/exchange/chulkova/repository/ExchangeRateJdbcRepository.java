@@ -1,6 +1,5 @@
 package ru.currency.exchange.chulkova.repository;
 
-import lombok.extern.slf4j.Slf4j;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
 
 import java.sql.*;
@@ -11,7 +10,6 @@ import java.util.Optional;
 import static ru.currency.exchange.chulkova.db.DatabaseConnection.DRIVER;
 import static ru.currency.exchange.chulkova.db.DatabaseConnection.URL;
 
-@Slf4j
 public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> {
     private static final String SELECT_ALL = "SELECT * FROM exchangeRate";
     private static final String SELECT_BY_CODE_PAIR = "SELECT * FROM exchangeRate e " +

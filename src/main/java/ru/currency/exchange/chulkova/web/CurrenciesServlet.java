@@ -1,6 +1,7 @@
 package ru.currency.exchange.chulkova.web;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.currency.exchange.chulkova.exceptions.AlreadyExistsException;
 import ru.currency.exchange.chulkova.model.CurrencyModel;
 import ru.currency.exchange.chulkova.service.CurrencyService;
 import ru.currency.exchange.chulkova.util.CurrencyUtils;
@@ -43,13 +44,13 @@ public class CurrenciesServlet extends HttpServlet {
         if (InputStringUtils.isEmptyField(code, name, sign)) {
             log.info(EMPTY_FORM_FIELD.getMessage());
             handleException(resp, EMPTY_FORM_FIELD);
+            return;
         } else if (CurrencyUtils.isNotValid(code, name, sign)) {
             log.info(DATA_IS_INVALID.getMessage());
             handleException(resp, DATA_IS_INVALID);
-        } else if (CurrencyUtils.isExisted(code)) {
-            log.info(ALREADY_EXISTS.getMessage());
-            handleException(resp, ALREADY_EXISTS);
-        } else {
+            return;
+        }
+        try {
             CurrencyModel currency = new CurrencyModel();
             currency.setCode(code);
             currency.setFullName(name);
@@ -58,6 +59,9 @@ public class CurrenciesServlet extends HttpServlet {
             log.info("created");
             resp.setStatus(HttpServletResponse.SC_CREATED);
             resp.getWriter().write(JsonUtil.writeJson(currency));
+        } catch (AlreadyExistsException e){
+            log.info(ALREADY_EXISTS.getMessage());
+            handleException(resp, ALREADY_EXISTS);
         }
     }
 }

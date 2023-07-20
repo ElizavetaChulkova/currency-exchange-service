@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ExceptionHandler {
+
     public static void handleException(HttpServletResponse resp, ErrorMessage error)
             throws IOException {
         resp.setStatus(error.getStatus());
