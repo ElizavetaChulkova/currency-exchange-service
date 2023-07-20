@@ -24,13 +24,13 @@ class ExchangeServiceTest {
     @Test
     void exchangeReversed() {
         Assertions.assertEquals(service.exchange(EXCHANGE_TO, EXCHANGE_FROM, EXCHANGE_AMOUNT),
-                0.011);
+                REVERSED_RESULT);
     }
 
     @Test
     void exchangeUsdCrossRate() {
         Assertions.assertEquals(service.exchange(EXCHANGE_TO, EXCHANGE_CROSS_FROM, EXCHANGE_AMOUNT),
-                0.0098);
+                USD_CROOS_RESULT);
     }
 
     @Test

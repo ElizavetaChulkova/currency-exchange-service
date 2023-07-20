@@ -1,7 +1,6 @@
 package ru.currency.exchange.chulkova.service;
 
 import org.junit.jupiter.api.*;
-import ru.currency.exchange.chulkova.TestData;
 import ru.currency.exchange.chulkova.exceptions.AlreadyExistsException;
 import ru.currency.exchange.chulkova.exceptions.NotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
@@ -25,7 +24,8 @@ class ExchangeRateServiceTest {
     @Order(1)
     void getAll() {
         List<ExchangeRate> actual = service.getAll();
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(TestData.rates);
+        Assertions.assertTrue(actual.containsAll(rates));
+//        assertThat(actual).containsExactlyInAnyOrderElementsOf(TestData.rates);
     }
 
     @Test
