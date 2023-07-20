@@ -19,7 +19,7 @@ public class CurrencyService {
 
     public CurrencyModel getByCode(String code) {
         log.info("getByCode currency : " + code);
-        CurrencyModel currency = currencyRepo.getByCode(code);
+        CurrencyModel currency = currencyRepo.getByCode(code).get();
         if (currency.getId() == null) {
             throw new NotFoundException("Data with this code not found in the database");
         }
@@ -37,7 +37,7 @@ public class CurrencyService {
 
     public CurrencyModel create(CurrencyModel currency) {
         log.info("create currency in database : " + currency.getId());
-        if (currencyRepo.getByCode(currency.getCode()).getId() != null){
+        if (currencyRepo.getByCode(currency.getCode()).get().getId() != null){
             throw new AlreadyExistsException("Currency with such code already exists");
         }
         return currencyRepo.create(currency);

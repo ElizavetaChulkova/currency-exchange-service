@@ -58,7 +58,7 @@ public class CurrencyJdbcRepository implements BaseRepository<CurrencyModel> {
         }
     }
 
-    public CurrencyModel getByCode(String code) {
+    public Optional<CurrencyModel> getByCode(String code) {
         try (Connection connection = DriverManager.getConnection(DatabaseConnection.URL)) {
             PreparedStatement ps = connection.prepareStatement(SELECT_BY_CODE);
             ps.setString(1, code);
@@ -67,7 +67,7 @@ public class CurrencyJdbcRepository implements BaseRepository<CurrencyModel> {
             while (resultSet.next()) {
                 currency = of(resultSet);
             }
-            return currency;
+            return Optional.of(currency);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -1,8 +1,9 @@
 package ru.currency.exchange.chulkova.web;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.currency.exchange.chulkova.exceptions.NotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
-import ru.currency.exchange.chulkova.repository.ExchangeRateJdbcRepository;
+import ru.currency.exchange.chulkova.service.CurrencyService;
 import ru.currency.exchange.chulkova.service.ExchangeRateService;
 import ru.currency.exchange.chulkova.util.ExchangeRateUtils;
 import ru.currency.exchange.chulkova.util.InputStringUtils;
@@ -22,6 +23,7 @@ import static ru.currency.exchange.chulkova.exceptions.ExceptionHandler.handleEx
 @Slf4j
 public class CurrencyPairExchangeRateServlet extends HttpServlet {
     private ExchangeRateService service = new ExchangeRateService();
+    private CurrencyService currencyService = new CurrencyService();
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -39,14 +41,14 @@ public class CurrencyPairExchangeRateServlet extends HttpServlet {
         }
         String base = pair.substring(0, 3);
         String target = pair.substring(3, pair.length());
-        if (!ExchangeRateUtils.isPairExisted(base, target)) {
-            log.error(PAIR_EXCHANGE_RATE_NOT_FOUND.getMessage());
-            handleException(resp, PAIR_EXCHANGE_RATE_NOT_FOUND);
-        } else {
+        try {
             ExchangeRate rate = service.getByCodePair(base, target);
             log.info("get exchange rate {} - {}", base, target);
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write(JsonUtil.writeJson(rate));
+        } catch (NullPointerException e){
+            log.error(PAIR_EXCHANGE_RATE_NOT_FOUND.getMessage());
+            handleException(resp, PAIR_EXCHANGE_RATE_NOT_FOUND);
         }
     }
 
@@ -67,7 +69,7 @@ public class CurrencyPairExchangeRateServlet extends HttpServlet {
         }
         String base = pair.substring(0, 3);
         String target = pair.substring(3, pair.length());
-        if (!ExchangeRateUtils.isPairExisted(base, target)) {
+        if (!ExchangeRateUtils.isPairNotExisted(base, target)) {
             log.error(PAIR_NOT_FOUND.getMessage());
             handleException(resp, PAIR_NOT_FOUND);
         } else {

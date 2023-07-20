@@ -23,15 +23,15 @@ public class ExchangeService {
         double answer = 0.0;
         double amount = Double.parseDouble(amountString);
         log.debug("exchange from {} to {} amount {}", from, to, amount);
-        if (currencyRepo.getByCode(from).getId() == null || currencyRepo.getByCode(to).getId() == null ||
+        if (currencyRepo.getByCode(from).get().getId() == null || currencyRepo.getByCode(to).get().getId() == null ||
                 from.equals(to)) {
             throw new NotFoundException("This exchange rate doesn't exist");
-        } else if (exRepo.getByCodePair(from, to).getId() != null) {
+        } else if (exRepo.getByCodePair(from, to).get().getId() != null) {
             log.info("straight strategy from {} to {}", from, to);
             ExchangeRate changePair = exchangeService.getByCodePair(from, to);
             double rate = changePair.getRate();
             answer = roundDoubles(amount * rate);
-        } else if (exRepo.getByCodePair(to, from).getId() != null) {
+        } else if (exRepo.getByCodePair(to, from).get().getId() != null) {
             log.info("reversed strategy to {} from {}", to, from);
             ExchangeRate changePair = exchangeService.getByCodePair(to, from);
             double rate = 1 / changePair.getRate();

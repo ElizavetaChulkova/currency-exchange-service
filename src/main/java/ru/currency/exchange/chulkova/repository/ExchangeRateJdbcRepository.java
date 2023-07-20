@@ -61,17 +61,18 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
         }
     }
 
-    public ExchangeRate getByCodePair(String baseCurrency, String targetCurrency) {
+    public Optional<ExchangeRate> getByCodePair(String baseCurrency, String targetCurrency) {
         try (Connection connection = DriverManager.getConnection(URL)) {
             PreparedStatement ps = connection.prepareStatement(SELECT_BY_CODE_PAIR);
-            ps.setInt(1, currencyRepo.getByCode(baseCurrency).getId());
-            ps.setInt(2, currencyRepo.getByCode(targetCurrency).getId());
-            ResultSet resultSet = ps.executeQuery();
             ExchangeRate rate = new ExchangeRate();
+            ps.setInt(1, currencyRepo.getByCode(baseCurrency).get().getId());
+            ps.setInt(2, currencyRepo.getByCode(targetCurrency).get().getId());
+            ResultSet resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 rate = of(resultSet);
+                System.out.println(rate);
             }
-            return rate;
+            return Optional.of(rate);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

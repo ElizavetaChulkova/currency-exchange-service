@@ -1,7 +1,10 @@
 package ru.currency.exchange.chulkova.web;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.currency.exchange.chulkova.exceptions.ErrorMessage;
+import ru.currency.exchange.chulkova.exceptions.NotFoundException;
 import ru.currency.exchange.chulkova.service.CurrencyService;
+import ru.currency.exchange.chulkova.util.CurrencyUtils;
 import ru.currency.exchange.chulkova.util.InputStringUtils;
 import ru.currency.exchange.chulkova.util.JsonUtil;
 
@@ -11,8 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static ru.currency.exchange.chulkova.exceptions.ErrorMessage.CODE_NOT_IN_ADDRESS;
-import static ru.currency.exchange.chulkova.exceptions.ErrorMessage.CURRENCY_NOT_FOUND;
+import static ru.currency.exchange.chulkova.exceptions.ErrorMessage.*;
 import static ru.currency.exchange.chulkova.exceptions.ExceptionHandler.handleException;
 
 @WebServlet("/currency/*")
@@ -29,13 +31,19 @@ public class CurrencyServlet extends HttpServlet {
         if (code.isEmpty()) {
             log.error(CODE_NOT_IN_ADDRESS.getMessage());
             handleException(resp, CODE_NOT_IN_ADDRESS);
-        } else if (service.getByCode(code).getId() == null) {
-            log.error(CURRENCY_NOT_FOUND.getMessage());
-            handleException(resp, CURRENCY_NOT_FOUND);
-        } else {
+            return;
+        } else if (code.length() != 3){
+            log.error(ErrorMessage.DATA_IS_INVALID.getMessage());
+            handleException(resp, DATA_IS_INVALID);
+            return;
+        }
+        try {
             log.info("get currency");
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write(JsonUtil.writeJson(service.getByCode(code)));
+        } catch (NotFoundException e) {
+            log.error(CURRENCY_NOT_FOUND.getMessage());
+            handleException(resp, CURRENCY_NOT_FOUND);
         }
     }
 }

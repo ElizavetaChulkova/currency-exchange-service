@@ -2,7 +2,6 @@ package ru.currency.exchange.chulkova.web;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.currency.exchange.chulkova.model.CurrencyModel;
-import ru.currency.exchange.chulkova.repository.CurrencyJdbcRepository;
 import ru.currency.exchange.chulkova.service.CurrencyService;
 import ru.currency.exchange.chulkova.util.CurrencyUtils;
 import ru.currency.exchange.chulkova.util.InputStringUtils;

@@ -11,6 +11,6 @@ public class CurrencyUtils {
     }
 
     public static boolean isExisted(String code) {
-        return currencyRepo.getByCode(code) != null;
+        return currencyRepo.getByCode(code).get().getId() != null;
     }
 }

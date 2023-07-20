@@ -30,7 +30,7 @@ class ExchangeRateJdbcRepositoryTest {
     @Test
     @Order(2)
     void getByCodePair() {
-        ExchangeRate actual = repository.getByCodePair(BASE, TARGET);
+        ExchangeRate actual = repository.getByCodePair(BASE, TARGET).get();
         assertThat(actual).usingRecursiveComparison().isEqualTo(rate1);
     }
 
@@ -53,7 +53,7 @@ class ExchangeRateJdbcRepositoryTest {
     @Order(5)
     void update() {
         RATE_TO_UPDATE.setId(repository.getByCodePair(RATE_TO_CREATE.getBase().getCode(),
-                RATE_TO_CREATE.getTarget().getCode()).getId());
+                RATE_TO_CREATE.getTarget().getCode()).get().getId());
         repository.update(RATE_TO_UPDATE);
         assertThat(RATE_TO_UPDATE).usingRecursiveComparison()
                 .isEqualTo(repository.getById(RATE_TO_UPDATE.getId()).orElse(null));
@@ -63,7 +63,7 @@ class ExchangeRateJdbcRepositoryTest {
     @Order(6)
     void delete() {
         int id = repository.getByCodePair(RATE_TO_UPDATE.getBase().getCode(),
-                RATE_TO_UPDATE.getTarget().getCode()).getId();
+                RATE_TO_UPDATE.getTarget().getCode()).get().getId();
         repository.delete(id);
         assertNull(repository.getById(id).get().getId());
     }

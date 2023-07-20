@@ -1,6 +1,7 @@
 package ru.currency.exchange.chulkova.web;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.currency.exchange.chulkova.exceptions.NotFoundException;
 import ru.currency.exchange.chulkova.service.ExchangeService;
 import ru.currency.exchange.chulkova.util.ExchangeRateUtils;
 import ru.currency.exchange.chulkova.util.InputStringUtils;
@@ -32,16 +33,20 @@ public class ExchangeServlet extends HttpServlet {
         if (InputStringUtils.isEmptyField(from, to, amount)) {
             log.error(EMPTY_FORM_FIELD.getMessage());
             handleException(resp, EMPTY_FORM_FIELD);
+            return;
         } else if (!ExchangeRateUtils.isCorrectArgs(from, to)) {
             log.error(DATA_IS_INVALID.getMessage());
             handleException(resp, DATA_IS_INVALID);
-        } else if (!ExchangeRateUtils.isPairExisted(from, to)) {
-            log.error(PAIR_EXCHANGE_RATE_NOT_FOUND.getMessage());
-            handleException(resp, PAIR_EXCHANGE_RATE_NOT_FOUND);
-        } else {
+            return;
+        }
+        try {
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write(JsonUtil.writeJson(service.getTo(from, to, amount)));
             log.info("exchanged");
+        } catch (NotFoundException e) {
+            log.error(PAIR_EXCHANGE_RATE_NOT_FOUND.getMessage());
+            handleException(resp, PAIR_EXCHANGE_RATE_NOT_FOUND);
         }
+
     }
 }

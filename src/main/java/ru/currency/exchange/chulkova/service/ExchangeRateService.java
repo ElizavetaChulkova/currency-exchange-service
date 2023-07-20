@@ -21,11 +21,11 @@ public class ExchangeRateService {
 
     public ExchangeRate getByCodePair(String baseCurrency, String targetCurrency) {
         log.info("getByCodePair exchange rate : " + baseCurrency + " " + targetCurrency);
-        ExchangeRate rate = exchangeRepo.getByCodePair(baseCurrency, targetCurrency);
-        if (rate.getId() == null) {
+        Optional<ExchangeRate> rate = exchangeRepo.getByCodePair(baseCurrency, targetCurrency);
+        if (rate.get().getId() == null) {
             throw new NotFoundException("Pair with these codes doesn't exist");
         }
-        return exchangeRepo.getByCodePair(baseCurrency, targetCurrency);
+        return exchangeRepo.getByCodePair(baseCurrency, targetCurrency).get();
     }
 
     public Optional<ExchangeRate> getById(int id) {
@@ -38,7 +38,7 @@ public class ExchangeRateService {
 
     public ExchangeRate create(ExchangeRate rate) {
         log.info("create exchange rate in database : " + rate.getId());
-        if (exchangeRepo.getByCodePair(rate.getBase().getCode(), rate.getTarget().getCode()).getId() != null){
+        if (exchangeRepo.getByCodePair(rate.getBase().getCode(), rate.getTarget().getCode()).get().getId() != null){
             throw new AlreadyExistsException("Currency with such code already exists");
         }
         return exchangeRepo.create(rate);

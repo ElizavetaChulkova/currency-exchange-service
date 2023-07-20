@@ -1,8 +1,9 @@
 package ru.currency.exchange.chulkova.web;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.currency.exchange.chulkova.exceptions.AlreadyExistsException;
+import ru.currency.exchange.chulkova.exceptions.NotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
-import ru.currency.exchange.chulkova.repository.ExchangeRateJdbcRepository;
 import ru.currency.exchange.chulkova.service.CurrencyService;
 import ru.currency.exchange.chulkova.service.ExchangeRateService;
 import ru.currency.exchange.chulkova.util.ExchangeRateUtils;
@@ -46,13 +47,13 @@ public class ExchangeRatesServlet extends HttpServlet {
         if (InputStringUtils.isEmptyField(base, target, rate)) {
             log.error(EMPTY_FORM_FIELD.getMessage());
             handleException(resp, EMPTY_FORM_FIELD);
+            return;
         } else if (!ExchangeRateUtils.isCorrectArgs(base, target)) {
             log.error(DATA_IS_INVALID.getMessage());
             handleException(resp, DATA_IS_INVALID);
-        } else if (ExchangeRateUtils.isPairExisted(base, target)) {
-            log.error(PAIR_ALREADY_EXISTS.getMessage());
-            handleException(resp, PAIR_ALREADY_EXISTS);
-        } else {
+            return;
+        }
+        try {
             ExchangeRate exchangeRate = new ExchangeRate();
             exchangeRate.setBase(currencyService.getByCode(base));
             exchangeRate.setTarget(currencyService.getByCode(target));
@@ -61,6 +62,9 @@ public class ExchangeRatesServlet extends HttpServlet {
             log.info("created");
             resp.setStatus(HttpServletResponse.SC_CREATED);
             resp.getWriter().write(JsonUtil.writeJson(exchangeRate));
+        } catch (AlreadyExistsException e) {
+            log.error(PAIR_ALREADY_EXISTS.getMessage());
+            handleException(resp, PAIR_ALREADY_EXISTS);
         }
     }
 }

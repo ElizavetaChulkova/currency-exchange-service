@@ -29,7 +29,7 @@ class CurrencyJdbcRepositoryTest {
     @Test
     @Order(2)
     void getByCode() {
-        CurrencyModel actual = repository.getByCode(CODE);
+        CurrencyModel actual = repository.getByCode(CODE).get();
         assertThat(actual).usingRecursiveComparison().isEqualTo(currency1);
     }
 
@@ -51,7 +51,7 @@ class CurrencyJdbcRepositoryTest {
     @Test
     @Order(5)
     void update() {
-        CURRENCY_TO_UPDATE.setId(repository.getByCode(CURRENCY_TO_CREATE.getCode()).getId());
+        CURRENCY_TO_UPDATE.setId(repository.getByCode(CURRENCY_TO_CREATE.getCode()).get().getId());
         repository.update(CURRENCY_TO_UPDATE);
         assertThat(CURRENCY_TO_UPDATE).usingRecursiveComparison()
                 .isEqualTo(repository.getByCode(CURRENCY_TO_UPDATE.getCode()));
@@ -60,7 +60,7 @@ class CurrencyJdbcRepositoryTest {
     @Test
     @Order(6)
     void delete() {
-        repository.delete(repository.getByCode(CURRENCY_TO_UPDATE.getCode()).getId());
-        assertNull(repository.getByCode(CURRENCY_TO_UPDATE.getCode()).getId());
+        repository.delete(repository.getByCode(CURRENCY_TO_UPDATE.getCode()).get().getId());
+        assertNull(repository.getByCode(CURRENCY_TO_UPDATE.getCode()).get().getId());
     }
 }
