@@ -2,7 +2,9 @@
 Currency exchange service : REST API, Servlets, JDBC, Sqlite, Lombok, Jackson, Slf4J, JUnit, AssertJ
 
 # Postman documentation
-https://documenter.getpostman.com/view/26533447/2s946k5VYE
+https://documenter.getpostman.com/view/26533447/2s946o2oDU
+
+### Application is available at <a href="http://188.225.11.14:8080/currency-exchange/"> currency-exchange <a/>
 
 # Техническое задание
 REST API для описания валют и обменных курсов. Позволяет просматривать и редактировать списки валют и обменных курсов, и совершать расчёт конвертации произвольных сумм из одной валюты в другую.
