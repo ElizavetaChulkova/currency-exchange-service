@@ -33,6 +33,6 @@ public class TestData {
     public static final String EXCHANGE_AMOUNT = "1.0";
     public static final double STRAIGHT_RESULT = 90.59;
     public static final double REVERSED_RESULT = 0.011;
-    public static final double USD_CROOS_RESULT = 0.0098;
+    public static final double USD_CROSS_RESULT = 0.0098;
     public static final String EXCHANGE_CROSS_FROM = "EUR";
 }

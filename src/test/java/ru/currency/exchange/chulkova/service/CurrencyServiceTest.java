@@ -57,8 +57,8 @@ public class CurrencyServiceTest {
     @Test
     @Order(6)
     void create() {
-        service.create(CURRENCY_TO_CREATE);
-        assertThat(CURRENCY_TO_CREATE).usingRecursiveComparison()
+        CurrencyModel currencyModel = service.create(CURRENCY_TO_CREATE);
+        assertThat(currencyModel).usingRecursiveComparison()
                 .isEqualTo(service.getByCode(CURRENCY_TO_CREATE.getCode()));
     }
 

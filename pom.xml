@@ -74,7 +74,15 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Database -->
+        <!--DataBase
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.6.0</version>
+        </dependency>
+        -->
+
+        <!-- Database sqlite -->
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
@@ -93,11 +101,13 @@
                     <target>11</target>
                 </configuration>
             </plugin>
+            <!--for tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M7</version>
             </plugin>
+
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.2</version>

@@ -44,9 +44,10 @@ class ExchangeRateJdbcRepositoryTest {
     @Test
     @Order(4)
     void create() {
-        repository.create(RATE_TO_CREATE);
-        assertThat(RATE_TO_CREATE).usingRecursiveComparison()
-                .isEqualTo(repository.getById(RATE_TO_CREATE.getId()).get());
+        ExchangeRate rate = repository.create(RATE_TO_CREATE);
+        assertThat(rate).usingRecursiveComparison()
+                .isEqualTo(repository.getByCodePair(RATE_TO_CREATE.getBase().getCode(),
+                        RATE_TO_CREATE.getTarget().getCode()).get());
     }
 
     @Test

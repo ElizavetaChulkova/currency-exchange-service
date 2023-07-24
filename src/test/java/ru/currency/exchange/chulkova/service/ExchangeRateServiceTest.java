@@ -58,25 +58,25 @@ class ExchangeRateServiceTest {
     @Test
     @Order(6)
     void create() {
-        service.create(RATE_TO_CREATE);
-        assertThat(RATE_TO_CREATE).usingRecursiveComparison()
+        ExchangeRate rate = service.create(RATE_TO_CREATE);
+        assertThat(rate).usingRecursiveComparison()
                 .isEqualTo(service.getByCodePair(RATE_TO_CREATE.getBase().getCode(),
                         RATE_TO_CREATE.getTarget().getCode()));
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void createExisted() {
         Assertions.assertThrows(AlreadyExistsException.class, () -> service.create(rate1));
     }
 
     @Test
-    @Order(8)
+    @Order(7)
     void update() {
         RATE_TO_UPDATE.setId(service.getByCodePair(RATE_TO_CREATE.getBase().getCode(),
                 RATE_TO_CREATE.getTarget().getCode()).getId());
-        service.update(RATE_TO_UPDATE);
-        assertThat(RATE_TO_UPDATE).usingRecursiveComparison()
+        ExchangeRate actual = service.update(RATE_TO_UPDATE);
+        assertThat(actual).usingRecursiveComparison()
                 .isEqualTo(service.getByCodePair(RATE_TO_UPDATE.getBase().getCode(),
                         RATE_TO_UPDATE.getTarget().getCode()));
     }

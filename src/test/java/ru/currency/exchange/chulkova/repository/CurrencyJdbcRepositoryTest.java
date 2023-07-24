@@ -43,8 +43,8 @@ class CurrencyJdbcRepositoryTest {
     @Test
     @Order(4)
     void create() {
-        repository.create(CURRENCY_TO_CREATE);
-        assertThat(CURRENCY_TO_CREATE).usingRecursiveComparison()
+        CurrencyModel currencyModel = repository.create(CURRENCY_TO_CREATE);
+        assertThat(currencyModel).usingRecursiveComparison()
                 .isEqualTo(repository.getByCode(CURRENCY_TO_CREATE.getCode()).get());
     }
 

@@ -1,7 +1,6 @@
 package ru.currency.exchange.chulkova.service;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.currency.exchange.chulkova.exceptions.ErrorMessage;
 import ru.currency.exchange.chulkova.exceptions.NotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
 import ru.currency.exchange.chulkova.repository.CurrencyJdbcRepository;
@@ -10,6 +9,8 @@ import ru.currency.exchange.chulkova.to.ExchangeDTO;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import static ru.currency.exchange.chulkova.exceptions.ErrorMessage.PAIR_EXCHANGE_RATE_NOT_FOUND;
 
 @Slf4j
 public class ExchangeService {
@@ -28,7 +29,7 @@ public class ExchangeService {
                 currencyRepo.getByCode(to).get().getId() == null ||
                 from.equals(to)) {
             log.error("not found exception thrown");
-            throw new NotFoundException(ErrorMessage.PAIR_EXCHANGE_RATE_NOT_FOUND.getMessage());
+            throw new NotFoundException(PAIR_EXCHANGE_RATE_NOT_FOUND);
         } else if (exRepo.getByCodePair(from, to).get().getId() != null) {
             log.info("straight strategy from {} to {}", from, to);
             ExchangeRate changePair = exchangeService.getByCodePair(from, to);

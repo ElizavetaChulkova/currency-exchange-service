@@ -1,14 +1,8 @@
 package ru.currency.exchange.chulkova.exceptions;
 
-public class NotFoundException extends RuntimeException {
+public class NotFoundException extends ApplicationException {
 
-    private String msgCode;
-
-    public NotFoundException(String msgCode) {
-        this.msgCode = msgCode;
-    }
-
-    public String getMsgCode() {
-        return msgCode;
+    public NotFoundException(ErrorMessage errorMessage) {
+        super(errorMessage);
     }
 }

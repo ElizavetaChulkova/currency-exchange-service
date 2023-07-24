@@ -30,7 +30,7 @@ class ExchangeServiceTest {
     @Test
     void exchangeUsdCrossRate() {
         Assertions.assertEquals(service.exchange(EXCHANGE_TO, EXCHANGE_CROSS_FROM, EXCHANGE_AMOUNT),
-                USD_CROOS_RESULT);
+                USD_CROSS_RESULT);
     }
 
     @Test
