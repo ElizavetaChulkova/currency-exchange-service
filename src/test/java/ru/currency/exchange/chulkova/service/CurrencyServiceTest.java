@@ -3,7 +3,7 @@ package ru.currency.exchange.chulkova.service;
 import org.junit.jupiter.api.*;
 import ru.currency.exchange.chulkova.exceptions.AlreadyExistsException;
 import ru.currency.exchange.chulkova.exceptions.NotFoundException;
-import ru.currency.exchange.chulkova.model.CurrencyModel;
+import ru.currency.exchange.chulkova.model.Currency;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class CurrencyServiceTest {
     @Test
     @Order(1)
     void getAll() {
-        List<CurrencyModel> actual = service.getAll();
+        List<Currency> actual = service.getAll();
         Assertions.assertTrue(actual.containsAll(currencies));
 //        assertThat(actual).containsExactlyInAnyOrderElementsOf(TestData.currencies);
     }
@@ -31,7 +31,7 @@ public class CurrencyServiceTest {
     @Test
     @Order(2)
     void getByCode() {
-        CurrencyModel actual = service.getByCode(CODE);
+        Currency actual = service.getByCode(CODE);
         assertThat(actual).usingRecursiveComparison().isEqualTo(currency1);
     }
 
@@ -44,7 +44,7 @@ public class CurrencyServiceTest {
     @Test
     @Order(4)
     void getById() {
-        CurrencyModel actual = service.getById(CURRENCY_ID);
+        Currency actual = service.getById(CURRENCY_ID);
         assertThat(actual).usingRecursiveComparison().isEqualTo(currency1);
     }
 
@@ -57,8 +57,8 @@ public class CurrencyServiceTest {
     @Test
     @Order(6)
     void create() {
-        CurrencyModel currencyModel = service.create(CURRENCY_TO_CREATE);
-        assertThat(currencyModel).usingRecursiveComparison()
+        Currency currency = service.create(CURRENCY_TO_CREATE);
+        assertThat(currency).usingRecursiveComparison()
                 .isEqualTo(service.getByCode(CURRENCY_TO_CREATE.getCode()));
     }
 

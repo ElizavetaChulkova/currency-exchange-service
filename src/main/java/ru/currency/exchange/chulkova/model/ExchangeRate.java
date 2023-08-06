@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ExchangeRate {
     private Integer id;
-    private CurrencyModel base;
-    private CurrencyModel target;
+    private Currency base;
+    private Currency target;
     private double rate;
 }

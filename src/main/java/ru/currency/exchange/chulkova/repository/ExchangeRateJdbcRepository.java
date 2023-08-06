@@ -1,6 +1,6 @@
 package ru.currency.exchange.chulkova.repository;
 
-import ru.currency.exchange.chulkova.db.DatabaseConnection;
+import ru.currency.exchange.chulkova.db.DataSource;
 import ru.currency.exchange.chulkova.exceptions.AlreadyExistsException;
 import ru.currency.exchange.chulkova.exceptions.ApplicationException;
 import ru.currency.exchange.chulkova.exceptions.NotFoundException;
@@ -28,7 +28,15 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
     private static final String DELETE = "DELETE FROM exchangeRate WHERE id = ?";
     private static final CurrencyJdbcRepository currencyRepo = new CurrencyJdbcRepository();
 
-    private static Connection connection = DatabaseConnection.getConnection();
+    private static Connection connection;
+
+    static {
+        try {
+            connection = DataSource.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public List<ExchangeRate> getAll() {
@@ -91,7 +99,7 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
 
     @Override
     public ExchangeRate create(ExchangeRate rate) {
-        try (PreparedStatement ps = connection.prepareStatement(CREATE, new String[] {"id"})) {
+        try (PreparedStatement ps = connection.prepareStatement(CREATE, new String[]{"id"})) {
             ps.setInt(1, rate.getBase().getId());
             ps.setInt(2, rate.getTarget().getId());
             ps.setDouble(3, rate.getRate());

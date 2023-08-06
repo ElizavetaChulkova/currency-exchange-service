@@ -74,13 +74,18 @@
             <scope>test</scope>
         </dependency>
 
-        <!--DataBase
+        <!--DataBase-->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.6.0</version>
         </dependency>
-        -->
+
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.0.1</version>
+        </dependency>
 
         <!-- Database sqlite -->
         <dependency>
@@ -88,6 +93,7 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.42.0.0</version>
         </dependency>
+
 
     </dependencies>
     <build>

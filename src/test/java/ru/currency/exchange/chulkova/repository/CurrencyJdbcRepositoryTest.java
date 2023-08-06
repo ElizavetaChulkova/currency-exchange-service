@@ -1,7 +1,7 @@
 package ru.currency.exchange.chulkova.repository;
 
 import org.junit.jupiter.api.*;
-import ru.currency.exchange.chulkova.model.CurrencyModel;
+import ru.currency.exchange.chulkova.model.Currency;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ class CurrencyJdbcRepositoryTest {
     @Test
     @Order(1)
     void getAll() {
-        List<CurrencyModel> actual = repository.getAll();
+        List<Currency> actual = repository.getAll();
         Assertions.assertTrue(actual.containsAll(currencies));
 //        assertThat(actual).hasSameElementsAs(TestData.currencies);
     }
@@ -29,22 +29,22 @@ class CurrencyJdbcRepositoryTest {
     @Test
     @Order(2)
     void getByCode() {
-        CurrencyModel actual = repository.getByCode(CODE).get();
+        Currency actual = repository.getByCode(CODE).get();
         assertThat(actual).usingRecursiveComparison().isEqualTo(currency1);
     }
 
     @Test
     @Order(3)
     void getById() {
-        CurrencyModel actual = repository.getById(CURRENCY_ID).orElse(null);
+        Currency actual = repository.getById(CURRENCY_ID).orElse(null);
         assertThat(actual).usingRecursiveComparison().isEqualTo(currency1);
     }
 
     @Test
     @Order(4)
     void create() {
-        CurrencyModel currencyModel = repository.create(CURRENCY_TO_CREATE);
-        assertThat(currencyModel).usingRecursiveComparison()
+        Currency currency = repository.create(CURRENCY_TO_CREATE);
+        assertThat(currency).usingRecursiveComparison()
                 .isEqualTo(repository.getByCode(CURRENCY_TO_CREATE.getCode()).get());
     }
 

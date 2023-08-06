@@ -1,21 +1,21 @@
 package ru.currency.exchange.chulkova;
 
-import ru.currency.exchange.chulkova.model.CurrencyModel;
+import ru.currency.exchange.chulkova.model.Currency;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
 
 import java.util.List;
 
 public class TestData {
 
-    public static final CurrencyModel currency1 = new CurrencyModel(1, "AUD", "Australian dollar", "A$");
+    public static final Currency currency1 = new Currency(1, "AUD", "Australian dollar", "A$");
     public static final String CODE = currency1.getCode();
     public static final int CURRENCY_ID = currency1.getId();
-    public static final CurrencyModel currency2 = new CurrencyModel(2, "USD", "US dollar", "$");
-    public static final CurrencyModel currency3 = new CurrencyModel(3, "RUB", "Russian ruble", "₽");
-    public static final CurrencyModel currency4 = new CurrencyModel(4, "EUR", "Euro", "€");
-    public static final CurrencyModel CURRENCY_TO_CREATE = new CurrencyModel(null, "COD", "To create", "S");
-    public static final CurrencyModel CURRENCY_TO_UPDATE = new CurrencyModel(null, "UPD", "To update", "U");
-    public static final List<CurrencyModel> currencies = List.of(currency1, currency2, currency3, currency4);
+    public static final Currency currency2 = new Currency(2, "USD", "US dollar", "$");
+    public static final Currency currency3 = new Currency(3, "RUB", "Russian ruble", "₽");
+    public static final Currency currency4 = new Currency(4, "EUR", "Euro", "€");
+    public static final Currency CURRENCY_TO_CREATE = new Currency(null, "COD", "To create", "S");
+    public static final Currency CURRENCY_TO_UPDATE = new Currency(null, "UPD", "To update", "U");
+    public static final List<Currency> currencies = List.of(currency1, currency2, currency3, currency4);
     public static final ExchangeRate rate1 = new ExchangeRate(1, currency2, currency3, 90.59);
     public static final int RATE_ID = rate1.getId();
     public static final String BASE = rate1.getBase().getCode();
