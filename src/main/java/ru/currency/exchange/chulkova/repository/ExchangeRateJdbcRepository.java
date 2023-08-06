@@ -26,7 +26,6 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
     private static final String UPDATE = "UPDATE exchangeRate SET base_currency_id = ?, target_currency_id = ?," +
             "rate = ? WHERE id = ?";
     private static final String DELETE = "DELETE FROM exchangeRate WHERE id = ?";
-    private static final CurrencyJdbcRepository currencyRepo = new CurrencyJdbcRepository();
 
     private static Connection connection;
 
@@ -57,8 +56,8 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
         ExchangeRate rate = new ExchangeRate();
         try {
             rate.setId(rs.getInt("id"));
-            rate.setBase(currencyRepo.getById(rs.getInt("base_currency_id")).orElseThrow());
-            rate.setTarget(currencyRepo.getById(rs.getInt("target_currency_id")).orElseThrow());
+            rate.setBase(rs.getInt("base_currency_id"));
+            rate.setTarget(rs.getInt("target_currency_id"));
             rate.setRate(rs.getDouble("rate"));
         } catch (SQLException e) {
             throw new ApplicationException(ERROR);
@@ -69,8 +68,8 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
     public Optional<ExchangeRate> getByCodePair(String baseCurrency, String targetCurrency) {
         try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_CODE_PAIR)) {
             ExchangeRate rate = new ExchangeRate();
-            ps.setInt(1, currencyRepo.getByCode(baseCurrency).get().getId());
-            ps.setInt(2, currencyRepo.getByCode(targetCurrency).get().getId());
+            ps.setInt(1, Integer.parseInt(baseCurrency));
+            ps.setInt(2, Integer.parseInt(targetCurrency));
             ResultSet resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 rate = of(resultSet);
@@ -100,8 +99,8 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
     @Override
     public ExchangeRate create(ExchangeRate rate) {
         try (PreparedStatement ps = connection.prepareStatement(CREATE, new String[]{"id"})) {
-            ps.setInt(1, rate.getBase().getId());
-            ps.setInt(2, rate.getTarget().getId());
+            ps.setInt(1, rate.getBase());
+            ps.setInt(2, rate.getTarget());
             ps.setDouble(3, rate.getRate());
             ps.executeUpdate();
             ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -117,8 +116,8 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
     @Override
     public ExchangeRate update(ExchangeRate rate) {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
-            ps.setInt(1, rate.getBase().getId());
-            ps.setInt(2, rate.getTarget().getId());
+            ps.setInt(1, rate.getBase());
+            ps.setInt(2, rate.getTarget());
             ps.setDouble(3, rate.getRate());
             ps.setInt(4, rate.getId());
             ps.executeUpdate();

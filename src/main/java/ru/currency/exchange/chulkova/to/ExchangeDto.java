@@ -8,7 +8,8 @@ import ru.currency.exchange.chulkova.model.Currency;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExchangeDTO {
+public class ExchangeDto {
+
     private Currency base;
     private Currency target;
     private double rate;

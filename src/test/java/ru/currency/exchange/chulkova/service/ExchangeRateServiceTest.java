@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import ru.currency.exchange.chulkova.exceptions.AlreadyExistsException;
 import ru.currency.exchange.chulkova.exceptions.NotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
+import ru.currency.exchange.chulkova.to.ExchangeRateDto;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ class ExchangeRateServiceTest {
     @Test
     @Order(4)
     void getById() {
-        ExchangeRate actual = service.getById(RATE_ID).orElse(null);
+        ExchangeRateDto actual = service.getById(RATE_ID);
         assertThat(actual).usingRecursiveComparison().isEqualTo(rate1);
     }
 
@@ -58,10 +59,10 @@ class ExchangeRateServiceTest {
     @Test
     @Order(6)
     void create() {
-        ExchangeRate rate = service.create(RATE_TO_CREATE);
+        ExchangeRateDto rate = service.create(RATE_TO_CREATE);
         assertThat(rate).usingRecursiveComparison()
-                .isEqualTo(service.getByCodePair(RATE_TO_CREATE.getBase().getCode(),
-                        RATE_TO_CREATE.getTarget().getCode()));
+                .isEqualTo(service.getByCodePair(ExchangeRateService.getTo(RATE_TO_CREATE).getBase().getCode(),
+                        ExchangeRateService.getTo(RATE_TO_CREATE).getTarget().getCode()));
     }
 
     @Test
@@ -73,12 +74,12 @@ class ExchangeRateServiceTest {
     @Test
     @Order(7)
     void update() {
-        RATE_TO_UPDATE.setId(service.getByCodePair(RATE_TO_CREATE.getBase().getCode(),
-                RATE_TO_CREATE.getTarget().getCode()).getId());
-        ExchangeRate actual = service.update(RATE_TO_UPDATE);
+        RATE_TO_UPDATE.setId(service.getByCodePair(ExchangeRateService.getTo(RATE_TO_CREATE).getBase().getCode(),
+                ExchangeRateService.getTo(RATE_TO_CREATE).getTarget().getCode()).getId());
+        ExchangeRateDto actual = service.update(RATE_TO_UPDATE);
         assertThat(actual).usingRecursiveComparison()
-                .isEqualTo(service.getByCodePair(RATE_TO_UPDATE.getBase().getCode(),
-                        RATE_TO_UPDATE.getTarget().getCode()));
+                .isEqualTo(service.getByCodePair(ExchangeRateService.getTo(RATE_TO_UPDATE).getBase().getCode(),
+                        ExchangeRateService.getTo(RATE_TO_UPDATE).getTarget().getCode()));
     }
 
     @Test
@@ -97,8 +98,8 @@ class ExchangeRateServiceTest {
     @Test
     @Order(11)
     void delete() {
-        int id = service.getByCodePair(RATE_TO_UPDATE.getBase().getCode(),
-                RATE_TO_UPDATE.getTarget().getCode()).getId();
+        int id = service.getByCodePair(ExchangeRateService.getTo(RATE_TO_UPDATE).getBase().getCode(),
+                ExchangeRateService.getTo(RATE_TO_UPDATE).getTarget().getCode()).getId();
         service.delete(id);
         Assertions.assertThrows(NotFoundException.class, () -> service.getById(id));
     }

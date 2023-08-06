@@ -5,7 +5,7 @@ import ru.currency.exchange.chulkova.exceptions.NotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
 import ru.currency.exchange.chulkova.repository.CurrencyJdbcRepository;
 import ru.currency.exchange.chulkova.repository.ExchangeRateJdbcRepository;
-import ru.currency.exchange.chulkova.to.ExchangeDTO;
+import ru.currency.exchange.chulkova.to.ExchangeDto;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -52,8 +52,8 @@ public class ExchangeService {
         return answer;
     }
 
-    public ExchangeDTO getTo(String from, String to, String amount) {
-        ExchangeDTO dto = new ExchangeDTO();
+    public ExchangeDto getTo(String from, String to, String amount) {
+        ExchangeDto dto = new ExchangeDto();
         dto.setBase(currencyService.getByCode(from));
         dto.setTarget(currencyService.getByCode(to));
         dto.setAmount(Double.parseDouble(amount));

@@ -44,8 +44,8 @@ public class ExchangeRatesServlet extends HttpServlet {
         try {
             ValidationUtil.validateExchangeRate(base, target, rate);
             ExchangeRate exchangeRate = new ExchangeRate();
-            exchangeRate.setBase(currencyService.getByCode(base));
-            exchangeRate.setTarget(currencyService.getByCode(target));
+            exchangeRate.setBase(currencyService.getByCode(base).getId());
+            exchangeRate.setTarget(currencyService.getByCode(target).getId());
             exchangeRate.setRate(Double.parseDouble(rate));
             exchangeService.create(exchangeRate);
             log.info("created");

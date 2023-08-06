@@ -1,16 +1,17 @@
-package ru.currency.exchange.chulkova.model;
+package ru.currency.exchange.chulkova.to;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.currency.exchange.chulkova.model.Currency;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExchangeRate {
+public class ExchangeRateDto {
 
     private Integer id;
-    private Integer base;
-    private Integer target;
+    private Currency base;
+    private Currency target;
     private double rate;
 }

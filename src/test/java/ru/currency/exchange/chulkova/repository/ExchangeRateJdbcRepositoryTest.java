@@ -2,6 +2,7 @@ package ru.currency.exchange.chulkova.repository;
 
 import org.junit.jupiter.api.*;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
+import ru.currency.exchange.chulkova.service.ExchangeRateService;
 
 import java.util.List;
 
@@ -46,15 +47,15 @@ class ExchangeRateJdbcRepositoryTest {
     void create() {
         ExchangeRate rate = repository.create(RATE_TO_CREATE);
         assertThat(rate).usingRecursiveComparison()
-                .isEqualTo(repository.getByCodePair(RATE_TO_CREATE.getBase().getCode(),
-                        RATE_TO_CREATE.getTarget().getCode()).get());
+                .isEqualTo(repository.getByCodePair(ExchangeRateService.getTo(RATE_TO_CREATE).getBase().getCode(),
+                        ExchangeRateService.getTo(RATE_TO_CREATE).getTarget().getCode()).get());
     }
 
     @Test
     @Order(5)
     void update() {
-        RATE_TO_UPDATE.setId(repository.getByCodePair(RATE_TO_CREATE.getBase().getCode(),
-                RATE_TO_CREATE.getTarget().getCode()).get().getId());
+        RATE_TO_UPDATE.setId(repository.getByCodePair(ExchangeRateService.getTo(RATE_TO_CREATE).getBase().getCode(),
+                ExchangeRateService.getTo(RATE_TO_CREATE).getTarget().getCode()).get().getId());
         repository.update(RATE_TO_UPDATE);
         assertThat(RATE_TO_UPDATE).usingRecursiveComparison()
                 .isEqualTo(repository.getById(RATE_TO_UPDATE.getId()).get());
@@ -63,8 +64,8 @@ class ExchangeRateJdbcRepositoryTest {
     @Test
     @Order(6)
     void delete() {
-        int id = repository.getByCodePair(RATE_TO_UPDATE.getBase().getCode(),
-                RATE_TO_UPDATE.getTarget().getCode()).get().getId();
+        int id = repository.getByCodePair(ExchangeRateService.getTo(RATE_TO_UPDATE).getBase().getCode(),
+                ExchangeRateService.getTo(RATE_TO_UPDATE).getTarget().getCode()).get().getId();
         repository.delete(id);
         assertNull(repository.getById(id).get().getId());
     }
