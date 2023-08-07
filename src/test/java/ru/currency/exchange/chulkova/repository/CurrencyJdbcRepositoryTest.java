@@ -6,7 +6,7 @@ import ru.currency.exchange.chulkova.model.Currency;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static ru.currency.exchange.chulkova.TestData.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -61,6 +61,6 @@ class CurrencyJdbcRepositoryTest {
     @Order(6)
     void delete() {
         repository.delete(repository.getByCode(CURRENCY_TO_UPDATE.getCode()).get().getId());
-        assertNull(repository.getByCode(CURRENCY_TO_UPDATE.getCode()).get().getId());
+        assertTrue(repository.getByCode(CURRENCY_TO_UPDATE.getCode()).isEmpty());
     }
 }

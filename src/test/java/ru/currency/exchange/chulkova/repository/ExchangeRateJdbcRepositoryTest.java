@@ -7,7 +7,7 @@ import ru.currency.exchange.chulkova.service.ExchangeRateService;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static ru.currency.exchange.chulkova.TestData.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -67,6 +67,6 @@ class ExchangeRateJdbcRepositoryTest {
         int id = repository.getByCodePair(ExchangeRateService.getTo(RATE_TO_UPDATE).getBase().getCode(),
                 ExchangeRateService.getTo(RATE_TO_UPDATE).getTarget().getCode()).get().getId();
         repository.delete(id);
-        assertNull(repository.getById(id).get().getId());
+        assertTrue(repository.getById(id).isEmpty());
     }
 }

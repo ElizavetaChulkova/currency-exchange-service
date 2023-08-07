@@ -1,7 +1,7 @@
 package ru.currency.exchange.chulkova.service;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.currency.exchange.chulkova.exceptions.notfound.NotFoundException;
+import ru.currency.exchange.chulkova.exceptions.notfound.CurrencyPairExchangeRateNotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
 import ru.currency.exchange.chulkova.repository.CurrencyJdbcRepository;
 import ru.currency.exchange.chulkova.repository.ExchangeRateJdbcRepository;
@@ -9,8 +9,6 @@ import ru.currency.exchange.chulkova.to.ExchangeDto;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
-import static ru.currency.exchange.chulkova.exceptions.ErrorMessage.PAIR_EXCHANGE_RATE_NOT_FOUND;
 
 @Slf4j
 public class ExchangeService {
@@ -25,23 +23,23 @@ public class ExchangeService {
         double answer = 0.0;
         double amount = Double.parseDouble(amountString);
         log.debug("exchange from {} to {} amount {}", from, to, amount);
-        if (currencyRepo.getByCode(from).get().getId() == null ||
-                currencyRepo.getByCode(to).get().getId() == null ||
+        if (currencyRepo.getByCode(from).isEmpty() ||
+                currencyRepo.getByCode(to).isEmpty() ||
                 from.equals(to)) {
             log.error("not found exception thrown");
-            throw new NotFoundException(PAIR_EXCHANGE_RATE_NOT_FOUND);
-        } else if (exRepo.getByCodePair(from, to).get().getId() != null) {
+            throw new CurrencyPairExchangeRateNotFoundException();
+        } else if (exRepo.getByCodePair(from, to).isPresent()) {
             log.info("straight strategy from {} to {}", from, to);
             ExchangeRate changePair = exchangeService.getByCodePair(from, to);
             double rate = changePair.getRate();
             answer = roundDoubles(amount * rate);
-        } else if (exRepo.getByCodePair(to, from).get().getId() != null) {
+        } else if (exRepo.getByCodePair(to, from).isPresent()) {
             log.info("reversed strategy to {} from {}", to, from);
             ExchangeRate changePair = exchangeService.getByCodePair(to, from);
             double rate = 1 / changePair.getRate();
             answer = roundDoubles(amount * rate);
-        } else if ((exRepo.getByCodePair("USD", from).get().getId() != null) &&
-                (exRepo.getByCodePair("USD", to).get().getId() != null)) {
+        } else if ((exRepo.getByCodePair("USD", from).isPresent()) &&
+                (exRepo.getByCodePair("USD", to).isPresent())) {
             log.info("USD cross-rate strategy USD - {}, USD - {}", from, to);
             String base = "USD";
             ExchangeRate usdFromRate = exchangeService.getByCodePair(base, from);

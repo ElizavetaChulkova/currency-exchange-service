@@ -42,7 +42,7 @@ public class ExchangeRateService {
         return exchangeRepo.getById(id).get();
     }
 
-    public ExchangeRateDto create(ExchangeRate rate) {
+    public ExchangeRate create(ExchangeRate rate) {
         log.info("create exchange rate in database : " + rate.getId());
         ExchangeRate created;
         try {
@@ -51,16 +51,16 @@ public class ExchangeRateService {
             log.error("already exists exception thrown");
             throw new CurrencyPairAlreadyExistsException();
         }
-        return getTo(created);
+        return created;
     }
 
-    public ExchangeRateDto update(ExchangeRate rate) {
+    public ExchangeRate update(ExchangeRate rate) {
         log.info("update exchange rate in database : " + rate.getId());
         if (exchangeRepo.getById(rate.getId()).isEmpty()) {
             log.error("not found exception thrown");
             throw new CurrencyPairExchangeRateNotFoundException();
         }
-        return getTo(exchangeRepo.update(rate));
+        return exchangeRepo.update(rate);
     }
 
     public void delete(int id) {
