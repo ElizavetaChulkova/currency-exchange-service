@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class ExchangeRate {
 
     private Integer id;
-    private Integer base;
-    private Integer target;
+    private String baseCode;
+    private String targetCode;
     private double rate;
 }

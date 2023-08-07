@@ -1,8 +1,8 @@
 package ru.currency.exchange.chulkova.service;
 
 import org.junit.jupiter.api.*;
-import ru.currency.exchange.chulkova.exceptions.AlreadyExistsException;
-import ru.currency.exchange.chulkova.exceptions.NotFoundException;
+import ru.currency.exchange.chulkova.exceptions.exists.AlreadyExistsException;
+import ru.currency.exchange.chulkova.exceptions.notfound.NotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
 import ru.currency.exchange.chulkova.to.ExchangeRateDto;
 
@@ -46,7 +46,7 @@ class ExchangeRateServiceTest {
     @Test
     @Order(4)
     void getById() {
-        ExchangeRateDto actual = service.getById(RATE_ID);
+        ExchangeRate actual = service.getById(RATE_ID);
         assertThat(actual).usingRecursiveComparison().isEqualTo(rate1);
     }
 

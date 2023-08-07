@@ -1,8 +1,8 @@
 package ru.currency.exchange.chulkova.service;
 
 import org.junit.jupiter.api.*;
-import ru.currency.exchange.chulkova.exceptions.AlreadyExistsException;
-import ru.currency.exchange.chulkova.exceptions.NotFoundException;
+import ru.currency.exchange.chulkova.exceptions.exists.AlreadyExistsException;
+import ru.currency.exchange.chulkova.exceptions.notfound.NotFoundException;
 import ru.currency.exchange.chulkova.model.Currency;
 
 import java.util.List;

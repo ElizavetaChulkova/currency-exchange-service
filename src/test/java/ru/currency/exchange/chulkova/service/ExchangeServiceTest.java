@@ -1,7 +1,7 @@
 package ru.currency.exchange.chulkova.service;
 
 import org.junit.jupiter.api.*;
-import ru.currency.exchange.chulkova.exceptions.NotFoundException;
+import ru.currency.exchange.chulkova.exceptions.notfound.NotFoundException;
 
 import static ru.currency.exchange.chulkova.TestData.*;
 

@@ -1,6 +1,6 @@
 package ru.currency.exchange.chulkova.util;
 
-import ru.currency.exchange.chulkova.exceptions.ValidationException;
+import ru.currency.exchange.chulkova.exceptions.validation.ValidationException;
 
 import static ru.currency.exchange.chulkova.exceptions.ErrorMessage.*;
 

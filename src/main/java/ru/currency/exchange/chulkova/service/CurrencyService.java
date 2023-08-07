@@ -1,15 +1,12 @@
 package ru.currency.exchange.chulkova.service;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.currency.exchange.chulkova.exceptions.AlreadyExistsException;
-import ru.currency.exchange.chulkova.exceptions.NotFoundException;
+import ru.currency.exchange.chulkova.exceptions.exists.CurrencyAlreadyExistsException;
+import ru.currency.exchange.chulkova.exceptions.notfound.CurrencyNotFoundException;
 import ru.currency.exchange.chulkova.model.Currency;
 import ru.currency.exchange.chulkova.repository.CurrencyJdbcRepository;
 
 import java.util.List;
-
-import static ru.currency.exchange.chulkova.exceptions.ErrorMessage.ALREADY_EXISTS;
-import static ru.currency.exchange.chulkova.exceptions.ErrorMessage.CURRENCY_NOT_FOUND;
 
 @Slf4j
 public class CurrencyService {
@@ -22,47 +19,48 @@ public class CurrencyService {
 
     public Currency getByCode(String code) {
         log.info("getByCode currency : " + code);
-        Currency currency = currencyRepo.getByCode(code).get();
-        if (currency.getId() == null) {
+        if (currencyRepo.getByCode(code).isEmpty()) {
             log.error("not found exception thrown");
-            throw new NotFoundException(CURRENCY_NOT_FOUND);
+            throw new CurrencyNotFoundException();
         }
-        return currency;
+        return currencyRepo.getByCode(code).get();
     }
 
     public Currency getById(int id) {
         log.info("getById currency : " + id);
-        Currency currency = currencyRepo.getById(id).orElseThrow();
-        if (currency.getId() == null) {
+        if (currencyRepo.getById(id).isEmpty()) {
             log.error("not found exception thrown");
-            throw new NotFoundException(CURRENCY_NOT_FOUND);
+            throw new CurrencyNotFoundException();
         }
-        return currencyRepo.getById(id).orElseThrow();
+        return currencyRepo.getById(id).get();
     }
 
     public Currency create(Currency currency) {
         log.info("create currency in database : " + currency.getId());
-        if (currencyRepo.getByCode(currency.getCode()).get().getId() != null) {
+        Currency created;
+        try {
+            created = currencyRepo.create(currency);
+        } catch (RuntimeException e) {
             log.error("already exists exception thrown");
-            throw new AlreadyExistsException(ALREADY_EXISTS);
+            throw new CurrencyAlreadyExistsException();
         }
-        return currencyRepo.create(currency);
+        return created;
     }
 
     public Currency update(Currency currency) {
         log.info("update currency in database : " + currency.getId());
-        if (currency.getId() == null || currencyRepo.getById(currency.getId()).get().getId() == null) {
+        if (currencyRepo.getById(currency.getId()).isEmpty()) {
             log.error("not found exception thrown");
-            throw new NotFoundException(CURRENCY_NOT_FOUND);
+            throw new CurrencyNotFoundException();
         }
         return currencyRepo.update(currency);
     }
 
     public void delete(int id) {
         log.info("delete currency from database : " + id);
-        if (currencyRepo.getById(id).isEmpty() || currencyRepo.getById(id).get().getId() == null) {
+        if (currencyRepo.getById(id).isEmpty()) {
             log.error("not found exception thrown");
-            throw new NotFoundException(CURRENCY_NOT_FOUND);
+            throw new CurrencyNotFoundException();
         }
         currencyRepo.delete(id);
     }

@@ -1,16 +1,15 @@
 package ru.currency.exchange.chulkova.service;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.currency.exchange.chulkova.exceptions.AlreadyExistsException;
-import ru.currency.exchange.chulkova.exceptions.NotFoundException;
+import ru.currency.exchange.chulkova.exceptions.exists.CurrencyPairAlreadyExistsException;
+import ru.currency.exchange.chulkova.exceptions.notfound.CurrencyNotFoundException;
+import ru.currency.exchange.chulkova.exceptions.notfound.CurrencyPairExchangeRateNotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
 import ru.currency.exchange.chulkova.repository.CurrencyJdbcRepository;
 import ru.currency.exchange.chulkova.repository.ExchangeRateJdbcRepository;
 import ru.currency.exchange.chulkova.to.ExchangeRateDto;
 
 import java.util.List;
-
-import static ru.currency.exchange.chulkova.exceptions.ErrorMessage.*;
 
 @Slf4j
 public class ExchangeRateService {
@@ -24,51 +23,51 @@ public class ExchangeRateService {
 
     public ExchangeRate getByCodePair(String baseCurrency, String targetCurrency) {
         log.info("getByCodePair exchange rate : " + baseCurrency + " " + targetCurrency);
-        try {
-            if (exchangeRepo.getByCodePair(baseCurrency, targetCurrency).get().getId() == null) {
-                log.error("not found exception thrown");
-                throw new NotFoundException(PAIR_NOT_FOUND);
-            }
-            return exchangeRepo.getByCodePair(baseCurrency, targetCurrency).get();
-        } catch (NullPointerException e) {
-            log.error("null pointer exception thrown");
-            throw new NotFoundException(PAIR_NOT_FOUND);
+        if (currencyRepo.getByCode(baseCurrency).isEmpty() || currencyRepo.getByCode(targetCurrency).isEmpty()) {
+            log.error("currency not found");
+            throw new CurrencyNotFoundException();
+        } else if (exchangeRepo.getByCodePair(baseCurrency, targetCurrency).isEmpty()) {
+            log.error("not found exception thrown");
+            throw new CurrencyPairExchangeRateNotFoundException();
         }
+        return exchangeRepo.getByCodePair(baseCurrency, targetCurrency).get();
     }
 
-    public ExchangeRateDto getById(int id) {
+    public ExchangeRate getById(int id) {
         log.info("getById exchange rate : " + id);
-        if (exchangeRepo.getById(id).get().getId() == null) {
+        if (exchangeRepo.getById(id).isEmpty()) {
             log.error("not found exception thrown");
-            throw new NotFoundException(PAIR_EXCHANGE_RATE_NOT_FOUND);
+            throw new CurrencyPairExchangeRateNotFoundException();
         }
-        return getTo(exchangeRepo.getById(id).get());
+        return exchangeRepo.getById(id).get();
     }
 
     public ExchangeRateDto create(ExchangeRate rate) {
         log.info("create exchange rate in database : " + rate.getId());
-        ExchangeRateDto to = getTo(rate);
-        if (exchangeRepo.getByCodePair(to.getBase().getCode(), to.getTarget().getCode()).get().getId() != null) {
+        ExchangeRate created;
+        try {
+            created = exchangeRepo.create(rate);
+        } catch (RuntimeException e) {
             log.error("already exists exception thrown");
-            throw new AlreadyExistsException(PAIR_ALREADY_EXISTS);
+            throw new CurrencyPairAlreadyExistsException();
         }
-        return getTo(exchangeRepo.create(rate));
+        return getTo(created);
     }
 
     public ExchangeRateDto update(ExchangeRate rate) {
         log.info("update exchange rate in database : " + rate.getId());
-        if (rate.getId() == null || exchangeRepo.getById(rate.getId()).get().getId() == null) {
+        if (exchangeRepo.getById(rate.getId()).isEmpty()) {
             log.error("not found exception thrown");
-            throw new NotFoundException(PAIR_EXCHANGE_RATE_NOT_FOUND);
+            throw new CurrencyPairExchangeRateNotFoundException();
         }
         return getTo(exchangeRepo.update(rate));
     }
 
     public void delete(int id) {
         log.info("delete exchange rate from database : " + id);
-        if (exchangeRepo.getById(id).get().getId() == null) {
+        if (exchangeRepo.getById(id).isEmpty()) {
             log.error("not found exception thrown");
-            throw new NotFoundException(PAIR_EXCHANGE_RATE_NOT_FOUND);
+            throw new CurrencyPairExchangeRateNotFoundException();
         }
         exchangeRepo.delete(id);
     }
@@ -76,8 +75,8 @@ public class ExchangeRateService {
     public static ExchangeRateDto getTo(ExchangeRate rate) {
         ExchangeRateDto to = new ExchangeRateDto();
         to.setId(rate.getId());
-        to.setBase(currencyRepo.getById(rate.getBase()).get());
-        to.setTarget(currencyRepo.getById(rate.getTarget()).get());
+        to.setBase(currencyRepo.getByCode(rate.getBaseCode()).get());
+        to.setTarget(currencyRepo.getByCode(rate.getTargetCode()).get());
         to.setRate(rate.getRate());
         return to;
     }

@@ -16,13 +16,13 @@ public class TestData {
     public static final Currency CURRENCY_TO_CREATE = new Currency(null, "COD", "To create", "S");
     public static final Currency CURRENCY_TO_UPDATE = new Currency(null, "UPD", "To update", "U");
     public static final List<Currency> currencies = List.of(currency1, currency2, currency3, currency4);
-    public static final ExchangeRate rate1 = new ExchangeRate(1, currency2.getId(), currency3.getId(), 90.59);
+    public static final ExchangeRate rate1 = new ExchangeRate(1, currency2.getCode(), currency3.getCode(), 90.59);
     public static final int RATE_ID = rate1.getId();
     public static final String BASE = currency2.getCode();
     public static final String TARGET = currency3.getCode();
-    public static final ExchangeRate rate2 = new ExchangeRate(2, currency2.getId(), currency4.getId(), 0.89);
-    public static final ExchangeRate RATE_TO_CREATE = new ExchangeRate(null, currency1.getId(), currency2.getId(), 1.0);
-    public static final ExchangeRate RATE_TO_UPDATE = new ExchangeRate(null, currency1.getId(), currency3.getId(), 1.1);
+    public static final ExchangeRate rate2 = new ExchangeRate(2, currency2.getCode(), currency4.getCode(), 0.89);
+    public static final ExchangeRate RATE_TO_CREATE = new ExchangeRate(null, currency1.getCode(), currency2.getCode(), 1.0);
+    public static final ExchangeRate RATE_TO_UPDATE = new ExchangeRate(null, currency1.getCode(), currency3.getCode(), 1.1);
     public static final List<ExchangeRate> rates = List.of(rate1, rate2);
     public static final String INVALID_CODE = "NOT";
     public static final int INVALID_ID = 100000;

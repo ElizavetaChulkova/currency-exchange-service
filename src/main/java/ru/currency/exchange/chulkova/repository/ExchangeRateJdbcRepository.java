@@ -1,9 +1,6 @@
 package ru.currency.exchange.chulkova.repository;
 
 import ru.currency.exchange.chulkova.db.DataSource;
-import ru.currency.exchange.chulkova.exceptions.AlreadyExistsException;
-import ru.currency.exchange.chulkova.exceptions.ApplicationException;
-import ru.currency.exchange.chulkova.exceptions.NotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
 
 import java.sql.Connection;
@@ -13,8 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static ru.currency.exchange.chulkova.exceptions.ErrorMessage.*;
 
 public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> {
     private static final String SELECT_ALL = "SELECT * FROM exchangeRate";
@@ -26,8 +21,9 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
     private static final String UPDATE = "UPDATE exchangeRate SET base_currency_id = ?, target_currency_id = ?," +
             "rate = ? WHERE id = ?";
     private static final String DELETE = "DELETE FROM exchangeRate WHERE id = ?";
+    private static final CurrencyJdbcRepository currencyRepo = new CurrencyJdbcRepository();
 
-    private static Connection connection;
+    private static final Connection connection;
 
     static {
         try {
@@ -48,7 +44,7 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
             }
             return rates;
         } catch (SQLException e) {
-            throw new ApplicationException(ERROR);
+            throw new RuntimeException(e);
         }
     }
 
@@ -56,28 +52,30 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
         ExchangeRate rate = new ExchangeRate();
         try {
             rate.setId(rs.getInt("id"));
-            rate.setBase(rs.getInt("base_currency_id"));
-            rate.setTarget(rs.getInt("target_currency_id"));
+            rate.setBaseCode(currencyRepo.getById(rs.getInt("base_currency_id")).get().getCode());
+            rate.setTargetCode(currencyRepo.getById(rs.getInt("target_currency_id")).get().getCode());
             rate.setRate(rs.getDouble("rate"));
+            return rate;
         } catch (SQLException e) {
-            throw new ApplicationException(ERROR);
+            throw new RuntimeException(e);
         }
-        return rate;
     }
 
     public Optional<ExchangeRate> getByCodePair(String baseCurrency, String targetCurrency) {
         try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_CODE_PAIR)) {
-            ExchangeRate rate = new ExchangeRate();
-            ps.setInt(1, Integer.parseInt(baseCurrency));
-            ps.setInt(2, Integer.parseInt(targetCurrency));
-            ResultSet resultSet = ps.executeQuery();
-            while (resultSet.next()) {
-                rate = of(resultSet);
-                System.out.println(rate);
-            }
-            return Optional.of(rate);
+            ps.setInt(1, currencyRepo.getByCode(baseCurrency).get().getId());
+            ps.setInt(2, currencyRepo.getByCode(targetCurrency).get().getId());
+            return getExchangeRate(ps.executeQuery());
         } catch (SQLException e) {
-            throw new NotFoundException(PAIR_EXCHANGE_RATE_NOT_FOUND);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Optional<ExchangeRate> getExchangeRate(ResultSet resultSet) throws SQLException {
+        if (!resultSet.next()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(of(resultSet));
         }
     }
 
@@ -85,22 +83,17 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
     public Optional<ExchangeRate> getById(int id) {
         try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID)) {
             ps.setInt(1, id);
-            ResultSet resultSet = ps.executeQuery();
-            ExchangeRate rate = new ExchangeRate();
-            while (resultSet.next()) {
-                rate = of(resultSet);
-            }
-            return Optional.of(rate);
+            return getExchangeRate(ps.executeQuery());
         } catch (SQLException e) {
-            throw new NotFoundException(PAIR_EXCHANGE_RATE_NOT_FOUND);
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public ExchangeRate create(ExchangeRate rate) {
         try (PreparedStatement ps = connection.prepareStatement(CREATE, new String[]{"id"})) {
-            ps.setInt(1, rate.getBase());
-            ps.setInt(2, rate.getTarget());
+            ps.setInt(1, currencyRepo.getByCode(rate.getBaseCode()).get().getId());
+            ps.setInt(2, currencyRepo.getByCode(rate.getTargetCode()).get().getId());
             ps.setDouble(3, rate.getRate());
             ps.executeUpdate();
             ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -109,21 +102,21 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
             }
             return rate;
         } catch (SQLException e) {
-            throw new AlreadyExistsException(PAIR_ALREADY_EXISTS);
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public ExchangeRate update(ExchangeRate rate) {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
-            ps.setInt(1, rate.getBase());
-            ps.setInt(2, rate.getTarget());
+            ps.setInt(1, currencyRepo.getByCode(rate.getBaseCode()).get().getId());
+            ps.setInt(2, currencyRepo.getByCode(rate.getTargetCode()).get().getId());
             ps.setDouble(3, rate.getRate());
             ps.setInt(4, rate.getId());
             ps.executeUpdate();
             return rate;
         } catch (SQLException e) {
-            throw new NotFoundException(PAIR_EXCHANGE_RATE_NOT_FOUND);
+            throw new RuntimeException(e);
         }
     }
 
@@ -133,7 +126,7 @@ public class ExchangeRateJdbcRepository implements BaseRepository<ExchangeRate> 
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new NotFoundException(PAIR_EXCHANGE_RATE_NOT_FOUND);
+            throw new RuntimeException(e);
         }
     }
 }

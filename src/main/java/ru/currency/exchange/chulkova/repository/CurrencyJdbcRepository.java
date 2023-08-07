@@ -1,8 +1,6 @@
 package ru.currency.exchange.chulkova.repository;
 
 import ru.currency.exchange.chulkova.db.DataSource;
-import ru.currency.exchange.chulkova.exceptions.ApplicationException;
-import ru.currency.exchange.chulkova.exceptions.NotFoundException;
 import ru.currency.exchange.chulkova.model.Currency;
 
 import java.sql.Connection;
@@ -13,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.currency.exchange.chulkova.exceptions.ErrorMessage.*;
-
 public class CurrencyJdbcRepository implements BaseRepository<Currency> {
 
     private static final String SELECT_ALL = "SELECT * FROM currency";
@@ -24,7 +20,7 @@ public class CurrencyJdbcRepository implements BaseRepository<Currency> {
     private static final String UPDATE = "UPDATE currency SET code = ?, full_name = ?, sign = ? WHERE id = ?";
     private static final String DELETE = "DELETE FROM currency WHERE id = ?";
 
-    private static Connection connection;
+    private static final Connection connection;
 
     static {
         try {
@@ -56,22 +52,25 @@ public class CurrencyJdbcRepository implements BaseRepository<Currency> {
             currency.setFullName(rs.getString("full_name"));
             currency.setSign(rs.getString("sign"));
         } catch (SQLException e) {
-            throw new ApplicationException(ERROR);
+            throw new RuntimeException(e);
         }
         return currency;
+    }
+
+    public static Optional<Currency> getCurrency(ResultSet resultSet) throws SQLException {
+        if (!resultSet.next()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(of(resultSet));
+        }
     }
 
     public Optional<Currency> getByCode(String code) {
         try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_CODE)) {
             ps.setString(1, code);
-            ResultSet resultSet = ps.executeQuery();
-            Currency currency = new Currency();
-            while (resultSet.next()) {
-                currency = of(resultSet);
-            }
-            return Optional.of(currency);
+            return getCurrency(ps.executeQuery());
         } catch (SQLException e) {
-            throw new NotFoundException(CURRENCY_NOT_FOUND);
+            throw new RuntimeException(e);
         }
     }
 
@@ -79,14 +78,9 @@ public class CurrencyJdbcRepository implements BaseRepository<Currency> {
     public Optional<Currency> getById(int id) {
         try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID)) {
             ps.setInt(1, id);
-            ResultSet resultSet = ps.executeQuery();
-            Currency currency = new Currency();
-            while (resultSet.next()) {
-                currency = of(resultSet);
-            }
-            return Optional.of(currency);
+            return getCurrency(ps.executeQuery());
         } catch (SQLException e) {
-            throw new NotFoundException(CURRENCY_NOT_FOUND);
+            throw new RuntimeException(e);
         }
     }
 
@@ -102,7 +96,7 @@ public class CurrencyJdbcRepository implements BaseRepository<Currency> {
             }
             return currency;
         } catch (SQLException e) {
-            throw new NotFoundException(ALREADY_EXISTS);
+            throw new RuntimeException(e);
         }
     }
 
@@ -116,7 +110,7 @@ public class CurrencyJdbcRepository implements BaseRepository<Currency> {
             ps.executeUpdate();
             return currency;
         } catch (SQLException e) {
-            throw new NotFoundException(CURRENCY_NOT_FOUND);
+            throw new RuntimeException(e);
         }
     }
 
@@ -126,7 +120,7 @@ public class CurrencyJdbcRepository implements BaseRepository<Currency> {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new NotFoundException(CURRENCY_NOT_FOUND);
+            throw new RuntimeException(e);
         }
     }
 }

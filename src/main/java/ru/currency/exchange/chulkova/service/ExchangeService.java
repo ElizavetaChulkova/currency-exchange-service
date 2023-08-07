@@ -1,7 +1,7 @@
 package ru.currency.exchange.chulkova.service;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.currency.exchange.chulkova.exceptions.NotFoundException;
+import ru.currency.exchange.chulkova.exceptions.notfound.NotFoundException;
 import ru.currency.exchange.chulkova.model.ExchangeRate;
 import ru.currency.exchange.chulkova.repository.CurrencyJdbcRepository;
 import ru.currency.exchange.chulkova.repository.ExchangeRateJdbcRepository;
